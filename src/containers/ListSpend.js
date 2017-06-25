@@ -13,7 +13,6 @@ import {
 import DatePicker from 'react-native-datepicker';
 import moment from 'moment';
 import {map, reduce, orderBy} from 'lodash';
-
 export default class ListSpend extends React.Component {
 
     constructor(props) {

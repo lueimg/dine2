@@ -11,7 +11,6 @@ import {
 } from 'native-base';
 import DatePicker from 'react-native-datepicker';
 import moment from 'moment';
-
 export default class FormSpent extends React.Component {
 
   constructor(props) {

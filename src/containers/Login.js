@@ -1,7 +1,5 @@
 import React from 'react';
 import {StyleSheet, Text, View, TouchableHighlight} from 'react-native';
-
-import Exponent from "expo";
 import firebase, {loginUser, logoutUser} from '../services/firebase.js'
 
 export default class Login extends React.Component {
@@ -14,6 +12,7 @@ export default class Login extends React.Component {
             user: {}
         };
     }
+
     componentDidMount() {
         // Listen for authentication state to change.
         firebase
