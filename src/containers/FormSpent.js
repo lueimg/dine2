@@ -42,7 +42,8 @@ export default class FormSpent extends React.Component {
       newSpend.set({
         date: moment(this.state.date).valueOf(),
         amount: this.state.amount,
-        description: this.state.description
+        description: this.state.description,
+        createAt: moment().valueOf()
       })
       this.cleanForm();
   }

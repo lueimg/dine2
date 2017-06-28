@@ -3,9 +3,9 @@ import { StyleSheet, View, TouchableHighlight, Alert } from 'react-native';
 import { Container, Content, Form, Item, Input, Label, Button, Text, Spinner, Toast } from 'native-base';
 import firebase, { loginUser, logoutUser } from '../services/firebase.js'
 
-export default class Login extends React.Component {
+export default class Register extends React.Component {
     static navigationOptions = {
-        title: 'Log In',
+        title: 'Create account',
     }
 
     constructor(props) {
@@ -17,12 +17,12 @@ export default class Login extends React.Component {
             isLoading: false,
             errorMessage: ''
         };
-        this.goToRegister = this.goToRegister.bind(this);
-        this.LoginUser = this.LoginUser.bind(this);
+        this.gotToLogin = this.gotToLogin.bind(this);
+        this.registerUser = this.registerUser.bind(this);
     }
 
-    goToRegister = () => {
-        this.props.navigation.navigate('Register', {})
+    gotToLogin = () => {
+        this.props.navigation.navigate('Login', {})
     }
 
     showMessage  = (message) => {
@@ -34,20 +34,29 @@ export default class Login extends React.Component {
             })
     }
 
-    LoginUser() {
+    registerUser() {
 
         if (!this.state.email || !this.state.password) {
-            return this.showMessage("Llene todo el formulario");
+            return this.showMessage("Llene todo el  formulario");
         };
 
         this.setState({isLoading: true})
-
-        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+        firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(response => {
             this.setState({isLoading: false});
+            console.log('created! ', response);
         }, (error) => {
             this.setState({isLoading: false});
+            console.log('error ', error);
+
             this.showMessage(error.message);
+        })
+        .catch(function (error) {
+            console.log('catch ', error);
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // ...
         });
     }
 
@@ -55,21 +64,19 @@ export default class Login extends React.Component {
         return (
             <Container>
                 <Content contentContainerStyle={{ flex: 1 }}>
-                    <Form>
+                    <Form >
                         <Item floatingLabel>
                             <Label>Email</Label>
-                            <Input style={{padding: 10}} keyboardType='email-address' onChangeText={(email) => this.setState({ email })} value={this.state.email} />
+                            <Input keyboardType='email-address' onChangeText={(email) => this.setState({ email })} value={this.state.email} />
                         </Item>
                         <Item floatingLabel last>
                             <Label>Password</Label>
-                            <Input  style={{padding: 10}}  onChangeText={(password) => this.setState({ password })} value={this.state.password} />
+                            <Input onChangeText={(password) => this.setState({ password })} value={this.state.password} />
                         </Item>
-                        <Button block style={{ margin: 20 }} onPress={this.LoginUser}>
-                            <Text>Login</Text>
+                        <Button block style={{ margin: 20 }} onPress={this.registerUser}>
+                            <Text>Register</Text>
                         </Button>
-                        <Button block transparent dark onPress={this.goToRegister}>
-                            <Text >Register</Text>
-                        </Button>
+                        
                         {this.state.isLoading && <Spinner />}
                     </Form>
                 </Content>
