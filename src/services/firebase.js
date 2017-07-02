@@ -44,6 +44,6 @@ export const logoutUser = () => {
 
 export const database = firebase.database();
 
-export const  currentUser = firebase.auth().currentUser ? firebase.auth().currentUser.uid: undefined;
+export const  currentUser = firebase.auth().currentUser;
 
 export default firebase;

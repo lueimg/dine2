@@ -1,58 +1,93 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
-import firebase, {database} from '../services/firebase.js'
+import { StyleSheet, Text, View, TouchableHighlight, KeyboardAvoidingView } from 'react-native';
+import firebase, { database } from '../services/firebase.js'
 import {
   Container,
   Content,
   Form,
   Item,
   Input,
-  Label, Button, Header, Left, Right, Body, Title
+  Label, Button, Header, Left, Right, Body, Title, Segment, Toast, Spinner
 } from 'native-base';
-import DatePicker from 'react-native-datepicker';
-import moment from 'moment';
-export default class FormSpent extends React.Component {
+import DateField from '../components/DateField.js';
+import { today, now, getDateUnix } from '../services/Dates.js';
+import FirebaseReady from '../components/FirebaseReady.js';
+
+class FormSpent extends React.Component {
 
   constructor(props) {
     super(props);
 
-    this.state = {
-      user: {},
-      date: moment().format("YYYY-MM-DD"),
+    this.defaultValues = {
+      date: today,
       amount: "",
-      description: ""
+      description: "",
+      account: 1,
+      isLoading: false
+    }
+
+    this.state = {
+      ...this.defaultValues
     };
+
     this.saveSpend = this.saveSpend.bind(this);
     this.cleanForm = this.cleanForm.bind(this);
+
+    this.accounts = [
+      { id: 1, 'name': 'Debito' },
+      { id: 2, 'name': 'CMR' },
+      { id: 3, 'name': 'TarjetaOh' },
+      { id: 4, 'name': 'Diners' },
+    ]
+  }
+  startLoading = () => {
+    this.setState({ isLoading: true })
+  }
+  stopLoading = () => {
+    this.setState({ isLoading: false })
   }
 
-  componentDidMount() {
-    // Listen for authentication state to change.
-    firebase
-      .auth()
-      .onAuthStateChanged(user => {
-        this.setState({ user: user });
-        //console.log("uesr", user)
-      });
-  }
+  saveSpend() {
+    if (!this.state.amount || !this.state.description) {
+      this.showMessage("Ingrese monto y descrip")
+      return false;
+    }
+    const ref = 'users/' + this.props.user.uid + '/spends';
 
-  saveSpend () {
-      const ref = 'users/' + this.state.user.uid + '/spends'
-      var newSpend = database.ref(ref).push();
-      newSpend.set({
-        date: moment(this.state.date).valueOf(),
-        amount: this.state.amount,
-        description: this.state.description,
-        createAt: moment().valueOf()
-      })
+    var newSpend = database.ref(ref).push();
+    this.startLoading();
+    newSpend.set({
+      date: getDateUnix(this.state.date),
+      amount: this.state.amount,
+      description: this.state.description,
+      account: this.state.account,
+      createAt: now()
+    }).then((response) => {
       this.cleanForm();
+      this.stopLoading()
+    }, (error) => {
+      this.showMessage(error.message)
+      this.stopLoading()
+    })
+
   }
 
-  cleanForm () {
+  cleanForm() {
     this.setState({
-      date: moment().format("YYYY-MM-DD"),
-      amount: "",
-      description: ''
+      ...this.defaultValues
+    })
+  }
+
+  setAccount = (id) => {
+    this.setState({ account: id })
+  }
+
+  showMessage = (message) => {
+    return Toast.show({
+      supportedOrientations: ['portrait', 'landscape'],
+      text: message,
+      position: 'top',
+      buttonText: 'Okay'
     })
   }
 
@@ -67,35 +102,46 @@ export default class FormSpent extends React.Component {
           </Body>
           <Right />
         </Header>
+
         <Content>
+          {this.state.isLoading && <Spinner />}
           <Form style={{ marginTop: 50 }}>
             <View style={{ margin: 15 }}>
-
-              <DatePicker
-                style={{ width: 200 }}
-                date={this.state.date}
-                mode="date"
-                placeholder="select date"
-                format="YYYY-MM-DD"
-                confirmBtnText="Confirm"
-                cancelBtnText="Cancel"
-                onDateChange={(date) => { this.setState({ date: date }) }}
+              <DateField
+                name="select date"
+                value={this.state.date}
+                onChange={(date) => { this.setState({ date: date }) }}
+                showIcon
               />
             </View>
             <Item stackedLabel>
               <Label>Gasto</Label>
-              <Input keyboardType='numeric' onChangeText={(amount) => this.setState({amount})} value={this.state.amount} />
+              <Input keyboardType='numeric' onChangeText={(amount) => this.setState({ amount })} value={this.state.amount} />
             </Item>
             <Item stackedLabel>
               <Label>Descripcion</Label>
-              <Input onChangeText={(description) => this.setState({description})} value={this.state.description}/>
+              <Input onChangeText={(description) => this.setState({ description })} value={this.state.description} />
             </Item>
+            <View>
+              <Label>Cuentas</Label>
+              <Segment style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                {this.accounts.map((item) => (
+                  <AccountButton
+                    key={item.id}
+                    id={item.id}
+                    name={item.name}
+                    isActive={this.state.account == item.id}
+                    cb={this.setAccount}
+                  />
+                ))}
+              </Segment>
+            </View>
             <View style={{ margin: 10 }}>
               <Button block primary onPress={this.saveSpend}>
                 <Text style={{ color: '#fff' }}>Guardar</Text>
               </Button>
               <Button light block style={{ marginTop: 30 }} onPress={this.cleanForm}>
-                <Text>Cancelar</Text>
+                <Text>Cancelar </Text>
               </Button>
             </View>
           </Form>
@@ -103,6 +149,19 @@ export default class FormSpent extends React.Component {
       </Container>
     );
   }
+}
+
+const AccountButton = ({ id, name, isActive, cb }) => {
+
+  const onPress = () => {
+    cb(id)
+  }
+
+  return (
+    <Button active={isActive} onPress={onPress}>
+      <Text>{name}</Text>
+    </Button>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -116,3 +175,6 @@ const styles = StyleSheet.create({
     marginTop: 20
   }
 });
+
+
+export default FirebaseReady(FormSpent);
