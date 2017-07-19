@@ -1,12 +1,27 @@
-import React from 'react';
-import { StyleSheet, View, TouchableHighlight } from 'react-native';
+import { Body, Button, Container, Content, Form, Header, Icon, Input, Item, Label, Left, List, ListItem, Right, Separator, Spinner, Text, Title } from 'native-base';
+import { StyleSheet, TouchableHighlight, View } from 'react-native';
+import { endDateDisplay, getDateDisplay, getDateUnix, startDateDisplay, today } from '../services/Dates.js';
 import firebase, { database } from '../services/firebase.js'
-import { Container, Content, Form, Item, Input, Label, Button, ListItem, Body, Right, List, Header, Left, Title, Icon, Separator, Text, Spinner } from 'native-base';
+import { groupBy, map, orderBy, reduce } from 'lodash';
+
 import DateField from '../components/DateField.js';
-import { today, startDateDisplay, endDateDisplay, getDateDisplay, getDateUnix } from '../services/Dates.js';
-import { map, reduce, orderBy, groupBy } from 'lodash';
 import FirebaseReady from '../components/FirebaseReady.js';
+import React from 'react';
 import styled from 'styled-components/native';
+
+const AcountsWrap = styled.View`
+    flex-direction: row;
+    justify-content: center
+`;
+
+const AccountFilter = styled(TouchableHighlight)`
+    background: ${ props => props.active ? 'blue': '#cccccc'};
+    padding: 5px;
+    margin : 5px;
+
+`;
+
+
 
 class ListSpend extends React.Component {
 
@@ -19,7 +34,8 @@ class ListSpend extends React.Component {
             total: 0,
             startDate: startDateDisplay,
             endDate: endDateDisplay,
-            isLoading: true
+            isLoading: true,
+            filterType: 'debito'
         };
     }
 
@@ -54,13 +70,17 @@ class ListSpend extends React.Component {
     }
 
     getData = (rawData) => {
+        const filterTypeCondition = this.state.filterType === 'debito' ? 
+            item =>  item.account == 1 || !item.account :
+            item => item.account > 1
+
         let items = map(rawData, (item) => {
             return {
                 ...item,
                 dateText: getDateDisplay(item.date),
                 type: 'row' // handle what is a normal row
             }
-        });
+        }).filter(filterTypeCondition)
 
         const total = this.sumTotal(items);
         const orderItems = orderBy(items, ['date'], ['desc'])
@@ -97,6 +117,13 @@ class ListSpend extends React.Component {
         });
     }
 
+
+    filterByAccount = (type) => {
+        this.setState({filterType: type}, () => {
+            this.updateList();
+        })
+    }
+
     render() {
 
         return (
@@ -129,6 +156,14 @@ class ListSpend extends React.Component {
                             onChange={this.onChangeEndDate}
                         />
                     </View>
+                    <AcountsWrap>
+                        <AccountFilter active={this.state.filterType == 'debito'} onPress={ () => this.filterByAccount('debito')}>
+                            <Text>Debito</Text>
+                        </AccountFilter>
+                        <AccountFilter active={this.state.filterType != 'debito'} onPress={ () => this.filterByAccount('credito')}>
+                            <Text>Credito</Text>
+                        </AccountFilter>
+                    </AcountsWrap>
                     <List>
                         {this.state.items.map((item, index) =>
                             <ListRow key={index} item={item} index={index} />)
@@ -143,7 +178,9 @@ class ListSpend extends React.Component {
 
 
 const ListRow = ({ item, index }) => {
-    return item.type === 'row' ? <SpendItem item={item} index={index} /> : <SummarySpend item={item} />
+    return item.type === 'row' ? 
+        <SpendItem item={item} index={index} /> : 
+        <SummarySpend item={item} />
 }
 
 const SummarySpend = ({ item }) => {
@@ -164,7 +201,7 @@ const SpendItem = ({ item, index }) => {
         <ListItem key={index}>
             <Body>
                 <Text>{item.description}</Text>
-                <SmallText>{item.dateText} - {item.date} - {item.createAt}</SmallText>
+                <SmallText>{item.dateText}</SmallText>
             </Body>
             <Right>
                 <Text>{item.amount}</Text>

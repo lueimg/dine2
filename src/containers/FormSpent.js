@@ -1,17 +1,58 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableHighlight, KeyboardAvoidingView } from 'react-native';
-import firebase, { database } from '../services/firebase.js'
 import {
+  Body,
+  Button,
   Container,
   Content,
   Form,
-  Item,
+  Header,
   Input,
-  Label, Button, Header, Left, Right, Body, Title, Segment, Toast, Spinner
+  Item,
+  Label,
+  Left,
+  Right,
+  Segment,
+  Spinner,
+  Title,
+  Toast
 } from 'native-base';
+import { KeyboardAvoidingView, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import firebase, { database } from '../services/firebase.js'
+import { getDateUnix, now, today, yesterday } from '../services/Dates.js';
+
 import DateField from '../components/DateField.js';
-import { today, now, getDateUnix } from '../services/Dates.js';
 import FirebaseReady from '../components/FirebaseReady.js';
+import React from 'react';
+import styled from 'styled-components/native';
+
+const DateFieldWrapper = styled.View`
+  flex-direction: column;
+  margin: 15px;
+
+`;
+ const ExtraButtons = styled.View`
+  flex-direction: row;
+  justify-content: space-around;
+ `;
+
+const DateButton = styled(Button)`
+  
+  padding: 10px;
+  background: red;
+  
+`;
+const ButtonText = styled(Text)`
+  color: #ffffff;
+`;
+
+
+const StyledSegment = styled(Segment)`
+  
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+ 
+  
+`;
 
 class FormSpent extends React.Component {
 
@@ -38,6 +79,8 @@ class FormSpent extends React.Component {
       { id: 2, 'name': 'CMR' },
       { id: 3, 'name': 'TarjetaOh' },
       { id: 4, 'name': 'Diners' },
+      { id: 5, 'name': 'Visa GN' },
+      { id: 6, 'name': 'Cencosu' },
     ]
   }
   startLoading = () => {
@@ -91,6 +134,17 @@ class FormSpent extends React.Component {
     })
   }
 
+  setToday = () => {
+    this.setState({
+     date: today
+    })
+  }
+  setYesterday = () => {
+    this.setState({
+     date: yesterday
+    })
+  }
+
 
   render() {
     return (
@@ -98,22 +152,32 @@ class FormSpent extends React.Component {
         <Header>
           <Left />
           <Body>
-            <Title>Registro</Title>
+            <Title>Registro</Title>{this.state.isLoading && <Spinner />}
           </Body>
           <Right />
         </Header>
 
-        <Content>
-          {this.state.isLoading && <Spinner />}
+        <Content padder>
+          
           <Form style={{ marginTop: 50 }}>
-            <View style={{ margin: 15 }}>
-              <DateField
-                name="select date"
-                value={this.state.date}
+            <DateFieldWrapper>
+              
+              <ExtraButtons>
+                <DateField 
+                name="select date" value={this.state.date} 
                 onChange={(date) => { this.setState({ date: date }) }}
                 showIcon
               />
-            </View>
+                <DateButton info onPress={this.setYesterday}>
+                  <ButtonText >Ayer</ButtonText>
+                </DateButton>
+                <DateButton info onPress={this.setToday}>
+                  <ButtonText>Hoy</ButtonText>
+                </DateButton>
+                
+              </ExtraButtons>
+                
+            </DateFieldWrapper>
             <Item stackedLabel>
               <Label>Gasto</Label>
               <Input keyboardType='numeric' onChangeText={(amount) => this.setState({ amount })} value={this.state.amount} />
@@ -124,7 +188,7 @@ class FormSpent extends React.Component {
             </Item>
             <View>
               <Label>Cuentas</Label>
-              <Segment style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+              <Segment style={{flexWrap: 'wrap', margin: 20}}>
                 {this.accounts.map((item) => (
                   <AccountButton
                     key={item.id}

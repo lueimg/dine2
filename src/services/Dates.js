@@ -6,6 +6,7 @@ const startDate = moment([moment().year(),moment().month() ])
 const endDate = moment(startDate).endOf('month')
 
 export const today = moment().format(format);
+export const yesterday = moment().add(-1, 'days').format(format)
 export const startDateDisplay = startDate.format(format)
 export const endDateDisplay = endDate.format(format)
 

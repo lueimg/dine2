@@ -12,8 +12,7 @@ export default function WrapperFirebase (Component) {
                 user : undefined,
             }
         }
-
-
+        
         componentDidMount() {
             // Listen for authentication state to change.
             firebase.auth().onAuthStateChanged(user => {
