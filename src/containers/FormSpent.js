@@ -15,10 +15,11 @@ import {
   Title,
   Toast
 } from 'native-base';
-import { KeyboardAvoidingView, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { FlatList, KeyboardAvoidingView, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import firebase, { database } from '../services/firebase.js'
 import { getDateUnix, now, today, yesterday } from '../services/Dates.js';
 
+import CuentasField from '../components/CuentasField';
 import DateField from '../components/DateField.js';
 import FirebaseReady from '../components/FirebaseReady.js';
 import React from 'react';
@@ -29,23 +30,23 @@ const DateFieldWrapper = styled.View`
   margin: 15px;
 
 `;
- const ExtraButtons = styled.View`
+const ExtraButtons = styled.View`
   flex-direction: row;
   justify-content: space-around;
  `;
 
-const DateButton = styled(Button)`
+const DateButton = styled(Button) `
   
   padding: 10px;
   background: red;
   
 `;
-const ButtonText = styled(Text)`
+const ButtonText = styled(Text) `
   color: #ffffff;
 `;
 
 
-const StyledSegment = styled(Segment)`
+const StyledSegment = styled(Segment) `
   
   display: flex;
   flex-wrap: wrap;
@@ -53,6 +54,11 @@ const StyledSegment = styled(Segment)`
  
   
 `;
+
+const SInput = styled(Input)`
+  padding: 10px
+`;
+
 
 class FormSpent extends React.Component {
 
@@ -136,12 +142,12 @@ class FormSpent extends React.Component {
 
   setToday = () => {
     this.setState({
-     date: today
+      date: today
     })
   }
   setYesterday = () => {
     this.setState({
-     date: yesterday
+      date: yesterday
     })
   }
 
@@ -158,48 +164,36 @@ class FormSpent extends React.Component {
         </Header>
 
         <Content padder>
-          
-          <Form style={{ marginTop: 50 }}>
+
+          <Form>
             <DateFieldWrapper>
-              
+
               <ExtraButtons>
-                <DateField 
-                name="select date" value={this.state.date} 
-                onChange={(date) => { this.setState({ date: date }) }}
-                showIcon
-              />
+                <DateField
+                  name="select date" value={this.state.date}
+                  onChange={(date) => { this.setState({ date: date }) }}
+                  showIcon
+                />
                 <DateButton info onPress={this.setYesterday}>
                   <ButtonText >Ayer</ButtonText>
                 </DateButton>
                 <DateButton info onPress={this.setToday}>
                   <ButtonText>Hoy</ButtonText>
                 </DateButton>
-                
+
               </ExtraButtons>
-                
+
             </DateFieldWrapper>
-            <Item stackedLabel>
+            <Item >
               <Label>Gasto</Label>
               <Input keyboardType='numeric' onChangeText={(amount) => this.setState({ amount })} value={this.state.amount} />
             </Item>
-            <Item stackedLabel>
+            <Item>
               <Label>Descripcion</Label>
               <Input onChangeText={(description) => this.setState({ description })} value={this.state.description} />
             </Item>
-            <View>
-              <Label>Cuentas</Label>
-              <Segment style={{flexWrap: 'wrap', margin: 20}}>
-                {this.accounts.map((item) => (
-                  <AccountButton
-                    key={item.id}
-                    id={item.id}
-                    name={item.name}
-                    isActive={this.state.account == item.id}
-                    cb={this.setAccount}
-                  />
-                ))}
-              </Segment>
-            </View>
+            <CuentasField setAccount={this.setAccount}/>
+
             <View style={{ margin: 10 }}>
               <Button block primary onPress={this.saveSpend}>
                 <Text style={{ color: '#fff' }}>Guardar</Text>
