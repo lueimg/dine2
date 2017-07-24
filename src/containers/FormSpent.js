@@ -1,21 +1,6 @@
-import {
-  Body,
-  Button,
-  Container,
-  Content,
-  Form,
-  Header,
-  Input,
-  Item,
-  Label,
-  Left,
-  Right,
-  Segment,
-  Spinner,
-  Title,
-  Toast
-} from 'native-base';
+import {Body, Button, Container, Content, Form, Input, Item, Label, Left, Right, Segment, Spinner, Title, Toast} from 'native-base';
 import { FlatList, KeyboardAvoidingView, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import Header, { HOCHeader } from '../components/Header.js';
 import firebase, { database } from '../services/firebase.js'
 import { getDateUnix, now, today, yesterday } from '../services/Dates.js';
 
@@ -51,8 +36,6 @@ const StyledSegment = styled(Segment) `
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
- 
-  
 `;
 
 const SInput = styled(Input)`
@@ -155,13 +138,7 @@ class FormSpent extends React.Component {
   render() {
     return (
       <Container>
-        <Header>
-          <Left />
-          <Body>
-            <Title>Registro</Title>{this.state.isLoading && <Spinner />}
-          </Body>
-          <Right />
-        </Header>
+       <Header title={'Registro'} />
 
         <Content padder>
 

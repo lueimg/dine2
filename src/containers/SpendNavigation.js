@@ -1,15 +1,13 @@
+import Header, { HOCHeader } from '../components/Header.js';
+
 import FormSpent from './FormSpent.js';
 import ListSpend from './ListSpend.js';
 import Profile from './Profile.js';
 import {TabNavigator} from "react-navigation";
 
-const TabNavigatorConfig = {
-  tabBarPosition: 'bottom', // top
-}
-
-const SpendNavigation = TabNavigator({
+const RouteConfig = {
   Form: {
-    screen: FormSpent
+    screen: FormSpent,
   },
   List: {
     screen: ListSpend
@@ -17,7 +15,13 @@ const SpendNavigation = TabNavigator({
   Logout: {
     screen: Profile
   }
-}, TabNavigatorConfig);
+}
+
+const TabNavigatorConfig = {
+  tabBarPosition: 'bottom', // top
+}
+
+const SpendNavigation = TabNavigator(RouteConfig, TabNavigatorConfig);
 
 
 export default SpendNavigation;

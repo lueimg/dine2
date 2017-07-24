@@ -1,7 +1,8 @@
-import React from 'react';
-import { StyleSheet, View, TouchableHighlight, Alert } from 'react-native';
-import { Container, Content, Form, Item, Input, Label, Button, Text, Spinner, Toast } from 'native-base';
+import { Alert, StyleSheet, TouchableHighlight, View } from 'react-native';
+import { Button, Container, Content, Form, Input, Item, Label, Spinner, Text, Toast } from 'native-base';
 import firebase, { loginUser, logoutUser } from '../services/firebase.js'
+
+import React from 'react';
 
 export default class Register extends React.Component {
     static navigationOptions = {
@@ -17,11 +18,10 @@ export default class Register extends React.Component {
             isLoading: false,
             errorMessage: ''
         };
-        this.gotToLogin = this.gotToLogin.bind(this);
         this.registerUser = this.registerUser.bind(this);
     }
 
-    gotToLogin = () => {
+    goToLogin = () => {
         this.props.navigation.navigate('Login', {})
     }
 
@@ -65,18 +65,20 @@ export default class Register extends React.Component {
             <Container>
                 <Content contentContainerStyle={{ flex: 1 }}>
                     <Form >
-                        <Item floatingLabel>
+                        <Item floatingLabel >
                             <Label>Email</Label>
-                            <Input keyboardType='email-address' onChangeText={(email) => this.setState({ email })} value={this.state.email} />
+                            <Input style={{padding: 10}} keyboardType='email-address' onChangeText={(email) => this.setState({ email })} value={this.state.email} />
                         </Item>
                         <Item floatingLabel last>
                             <Label>Password</Label>
-                            <Input onChangeText={(password) => this.setState({ password })} value={this.state.password} />
+                            <Input style={{padding: 10}} onChangeText={(password) => this.setState({ password })} value={this.state.password} />
                         </Item>
                         <Button block style={{ margin: 20 }} onPress={this.registerUser}>
                             <Text>Register</Text>
                         </Button>
-                        
+                        <Button block transparent dark onPress={this.goToLogin}>
+                            <Text >Login</Text>
+                        </Button>
                         {this.state.isLoading && <Spinner />}
                     </Form>
                 </Content>

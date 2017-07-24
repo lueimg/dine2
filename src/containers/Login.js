@@ -1,7 +1,8 @@
-import React from 'react';
-import { StyleSheet, View, TouchableHighlight, Alert } from 'react-native';
-import { Container, Content, Form, Item, Input, Label, Button, Text, Spinner, Toast } from 'native-base';
+import { Alert, StyleSheet, TouchableHighlight, View } from 'react-native';
+import { Button, Container, Content, Form, Input, Item, Label, Spinner, Text, Toast } from 'native-base';
 import firebase, { loginUser, logoutUser } from '../services/firebase.js'
+
+import React from 'react';
 
 export default class Login extends React.Component {
     static navigationOptions = {
@@ -17,7 +18,6 @@ export default class Login extends React.Component {
             isLoading: false,
             errorMessage: ''
         };
-        this.goToRegister = this.goToRegister.bind(this);
         this.LoginUser = this.LoginUser.bind(this);
     }
 
