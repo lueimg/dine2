@@ -1,4 +1,5 @@
-import { Body, Button, Container, Content, Form, Header, Icon, Input, Item, Label, Left, List, ListItem, Right, Separator, Spinner, Text, Title } from 'native-base';
+import { Body, Button, Container, Content, Form, Icon, Input, Item, Label, Left, List, ListItem, Right, Separator, Spinner, Text, Title } from 'native-base';
+import Header, { HOCHeader } from '../components/Header.js';
 import { StyleSheet, TouchableHighlight, View } from 'react-native';
 import { endDateDisplay, getDateDisplay, getDateUnix, startDateDisplay, today } from '../services/Dates.js';
 import firebase, { database } from '../services/firebase.js'
@@ -20,8 +21,6 @@ const AccountFilter = styled(TouchableHighlight)`
     margin : 5px;
 
 `;
-
-
 
 class ListSpend extends React.Component {
 
@@ -128,14 +127,7 @@ class ListSpend extends React.Component {
 
         return (
             <Container>
-                <Header>
-                    <Left />
-                    <Body>
-                        <Title>Gastos</Title>
-
-                    </Body>
-                    <Right />
-                </Header>
+                <Header title="Gastos"></Header>
 
                 <Content>
                     {this.state.isLoading && <Spinner />}
