@@ -9,7 +9,7 @@ const HeaderStatusBar = styled.View`
 `;
 
 const HeaderWrapper = styled.View`
-  height: 90px;
+  height: 70px;
   border-bottom-width: 1px;
   background: #3f51b5;
   justify-content: center;

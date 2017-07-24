@@ -7,11 +7,21 @@ import styled from 'styled-components/native';
 
 const ItemWrapper = styled.TouchableHighlight`
     border: 1px;
-    border-radius: 5px;
+    border-color: #ccc;
+    border-radius: 2px;
     padding: 5px 10px;
     margin: 5px;
     ${props => props.active ? 'background: #3f51b5;': ''}
     ${props => props.active ? 'color: white;': ''}
+`;
+
+const FieldTitle = styled.Text`
+   margin-bottom: 10px;
+    font-size: 18px;
+`;
+
+const FieldWrapper = styled.View`
+    margin: 20px;
 `;
 
 const Itemtext = styled.Text`
@@ -63,8 +73,8 @@ class CuentasField extends Component {
 
     render() {
         return (
-            <View>
-              <Label>Cuentas</Label>
+            <FieldWrapper>
+              <FieldTitle>Cuentas</FieldTitle>
               <FlatList
                   data={this.state.items}
                   renderItem={({item}) => 
@@ -75,7 +85,7 @@ class CuentasField extends Component {
                 }
                   horizontal
                 />
-            </View>
+            </FieldWrapper>
         );
     }
 }

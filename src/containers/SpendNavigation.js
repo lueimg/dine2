@@ -1,9 +1,9 @@
 import Header, { HOCHeader } from '../components/Header.js';
+import {TabBarBottom, TabNavigator} from "react-navigation";
 
 import FormSpent from './FormSpent.js';
 import ListSpend from './ListSpend.js';
 import Profile from './Profile.js';
-import {TabNavigator} from "react-navigation";
 
 const RouteConfig = {
   Form: {
@@ -18,6 +18,7 @@ const RouteConfig = {
 }
 
 const TabNavigatorConfig = {
+  tabBarComponent: TabBarBottom,
   tabBarPosition: 'bottom', // top
 }
 
